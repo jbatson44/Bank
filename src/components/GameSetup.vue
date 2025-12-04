@@ -1,31 +1,5 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const playerInput = ref('')
-const players = ref<string[]>([])
-
-const addPlayer = () => {
-  if (playerInput.value.trim()) {
-    players.value.push(playerInput.value.trim())
-    playerInput.value = ''
-  }
-}
-
-const removePlayer = (index: number) => {
-  players.value.splice(index, 1)
-}
-
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    addPlayer()
-  }
-}
-</script>
-
 <template>
   <div>
-    <h1>Bank Game</h1>
-    
     <div class="input-section">
       <input
         v-model="playerInput"
@@ -47,8 +21,48 @@ const handleKeydown = (e: KeyboardEvent) => {
     </div>
 
     <p v-else>No players added yet</p>
+
+    <select v-model="selectedRounds">
+      <option v-for="rounds in roundOptions" :key="rounds" :value="rounds">
+        {{ rounds }}
+      </option>
+    </select>
+
+    <button v-if="players.length > 0" v-on:click="startGame()">Start Game</button>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useGlobalStore } from '@/stores/globalStore'
+
+const globalStore = useGlobalStore();
+const playerInput = ref('')
+const players = ref<string[]>([])
+const roundOptions = ref<number[]>([10, 15, 20])
+const selectedRounds = ref<number>(10)
+
+const addPlayer = () => {
+  if (playerInput.value.trim()) {
+    players.value.push(playerInput.value.trim())
+    playerInput.value = ''
+  }
+}
+
+const removePlayer = (index: number) => {
+  players.value.splice(index, 1)
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    addPlayer()
+  }
+}
+
+function startGame() {
+  globalStore.startGame(players.value, selectedRounds.value);
+}
+</script>
 
 <style scoped>
 .input-section {
