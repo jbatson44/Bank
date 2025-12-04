@@ -76,12 +76,11 @@ function addScore(score: string) {
     case"7":
       if (roll <= 3) {
         currentScore.value += 70; 
+        break;
       }
-      else {
-        endRound();
-        nextPlayerTurn();
-        return;
-      }
+      endRound();
+      nextPlayerTurn();
+      return;
     default:
       currentScore.value += parseInt(score);
   }

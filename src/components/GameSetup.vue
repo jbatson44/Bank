@@ -28,7 +28,7 @@
       </option>
     </select>
 
-    <button v-if="players.length > 0" v-on:click="startGame()">Start Game</button>
+    <button v-if="players.length > 1" v-on:click="startGame()">Start Game</button>
   </div>
 </template>
 
