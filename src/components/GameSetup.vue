@@ -21,7 +21,7 @@
     </div>
 
     <p v-else>No players added yet</p>
-
+    <h4>Select Number of Rounds:</h4>
     <select v-model="selectedRounds">
       <option v-for="rounds in roundOptions" :key="rounds" :value="rounds">
         {{ rounds }}

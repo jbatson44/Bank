@@ -10,7 +10,8 @@ export const useGlobalStore = defineStore('globalStore', () => {
     isGameStarted.value = true;
     playerList.value = players.map(n => ({
       name: n,
-      score: 0
+      score: 0,
+      banked: false
     }));
     numberOfRounds.value = rounds;
   }
