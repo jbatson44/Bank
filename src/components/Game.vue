@@ -14,12 +14,12 @@
           <tr v-for="(player, index) in players" :key="index">
             <td>{{ player.name }}</td>
             <td>{{ player.score }}</td>
-            <td><button v-on:click="bankScore(player)">Bank</button></td>
+            <td><button v-on:click="bankScore(player)" :hidden="isBanked(player)">Bank</button></td>
           </tr>
         </tbody>
       </table>
     </div>
-    <h4>Current Score: {{ currentScore }} | Roll: {{ roll }} {{ playersNotBanked[currentPlayerIndex]?.name }}'s Turn</h4>
+    <h4>Current Score: {{ currentScore }} | {{ playersNotBanked[currentPlayerIndex]?.name }}'s Turn</h4>
     <div class="score-grid">
       <button
           v-for="score in scoreOptions"
@@ -40,6 +40,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useGlobalStore } from '@/stores/globalStore'
+import type { Player } from '@/models/Player'
 
 const globalStore = useGlobalStore();
 let currentRound = 1;
@@ -49,26 +50,37 @@ let currentPlayerIndex = 0;
 const scoreOptions = ["2","3","4","5","6","7","8","9","10","11",'12',"Doubles"]
 const players = globalStore.playerList;
 const playersNotBanked = computed(() => players.filter(p => !p.banked));
+let lastPlayerToRoll = ref<Player>();
 
-function bankScore(player: { name: string; score: number, banked: boolean }) {
-  player.score += currentScore.value; 
-  player.banked = true;
-  if (playersNotBanked.value.length === 0) {
-    endRound();
-  } else {
+function bankScore(player: Player) {
+  var isBankingPlayersTurnToRoll = playersNotBanked.value.findIndex(p => p === player) === currentPlayerIndex;
+  if (isBankingPlayersTurnToRoll) {
     nextPlayerTurn();
   }
+  player.score += currentScore.value; 
+  player.banked = true;
+
+  if (playersNotBanked.value.length === 0) {
+    endRound();
+  } 
 }
 
 function nextPlayerTurn() {
   currentPlayerIndex = (currentPlayerIndex + 1) % playersNotBanked.value.length;
+  console.log("nextPlayerTurn " + currentPlayerIndex);
 }
 
 function isDanger(score: string) {
   return score === "7" && roll > 3;
 }
 
+function isBanked(player: Player) {
+  return player.banked;
+}
+
 function addScore(score: string) {
+  var player = playersNotBanked.value[currentPlayerIndex];
+  lastPlayerToRoll.value = player;
   switch(score) {
     case "Doubles":
       currentScore.value *= 2;
@@ -79,7 +91,6 @@ function addScore(score: string) {
         break;
       }
       endRound();
-      nextPlayerTurn();
       return;
     default:
       currentScore.value += parseInt(score);
@@ -105,6 +116,10 @@ function endRound() {
   currentScore.value = 0; 
   roll = 1;
   players.forEach(p => p.banked = false);
+  // next round, the player that comes after the last roller should start
+  currentPlayerIndex = players.findIndex(p => p === lastPlayerToRoll.value)
+  console.log("last player to roll index in players: " + currentPlayerIndex);
+  nextPlayerTurn();
   if (currentRound > globalStore.numberOfRounds) {
     alert('Game Over!');
     globalStore.cancelGame();
