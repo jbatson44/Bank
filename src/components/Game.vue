@@ -85,10 +85,13 @@ function addScore(score: string) {
     case "Doubles":
       currentScore.value *= 2;
       break;
-    case"7":
+    case "7":
       if (roll <= 3) {
-        currentScore.value += 70; 
+        currentScore.value += 70;
         break;
+      }
+      if (globalStore.punishingEnabled) {
+        lastPlayerToRoll.value.score -= 70; 
       }
       endRound();
       return;

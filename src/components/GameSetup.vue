@@ -28,6 +28,13 @@
       </option>
     </select>
 
+    <div class="punishing-section">
+      <label>
+        <input type="checkbox" v-model="isPunishingEnabled" />
+        Enable Punishing?
+      </label>
+    </div>
+
     <button v-if="players.length > 1" v-on:click="startGame()">Start Game</button>
   </div>
 </template>
@@ -41,6 +48,7 @@ const playerInput = ref('')
 const players = ref<string[]>([])
 const roundOptions = ref<number[]>([10, 15, 20])
 const selectedRounds = ref<number>(10)
+const isPunishingEnabled = ref<boolean>(false)
 
 const addPlayer = () => {
   if (playerInput.value.trim()) {
@@ -60,7 +68,7 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 function startGame() {
-  globalStore.startGame(players.value, selectedRounds.value);
+  globalStore.startGame(players.value, selectedRounds.value, isPunishingEnabled.value);
 }
 </script>
 
@@ -100,5 +108,15 @@ li {
   margin: 0.5rem 0;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.punishing-section {
+  margin-top: 1rem;
+}
+
+.punishing-section label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>

@@ -5,8 +5,10 @@ import type { Player } from '@/models/Player'
 export const useGlobalStore = defineStore('globalStore', () => {
   const isGameStarted = ref(false);
   const numberOfRounds = ref(0);
-  var playerList = ref<Player[]>([]);
-  function startGame(players: string[], rounds: number) {
+  const playerList = ref<Player[]>([]);
+  const punishingEnabled = ref(false);
+
+  function startGame(players: string[], rounds: number, punishing: boolean) {
     isGameStarted.value = true;
     playerList.value = players.map(n => ({
       name: n,
@@ -14,6 +16,7 @@ export const useGlobalStore = defineStore('globalStore', () => {
       banked: false
     }));
     numberOfRounds.value = rounds;
+    punishingEnabled.value = punishing;
   }
   function cancelGame() {
     isGameStarted.value = false;
@@ -21,5 +24,5 @@ export const useGlobalStore = defineStore('globalStore', () => {
     numberOfRounds.value = 10;
   }
 
-  return { isGameStarted, startGame, numberOfRounds, playerList,cancelGame };
+  return { isGameStarted, startGame, numberOfRounds, playerList, cancelGame, punishingEnabled };
 })
